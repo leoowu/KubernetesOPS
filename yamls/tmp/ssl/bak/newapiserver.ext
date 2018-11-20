@@ -1,0 +1,1 @@
+subjectAltName =  DNS:k8s.ucex, DNS:kubernetes, DNS:kubernetes.default, DNS:kubernetes.default.svc, DNS:kubernetes.default.svc.cluster.local, IP:10.96.0.1, IP:192.168.190.102, IP:192.168.190.103, IP:192.168.190.104, IP:192.168.190.105, IP:192.168.190.106, IP:192.168.197.107, IP:192.168.190.108, IP:192.168.190.109, IP:172.17.0.1, IP:172.17.0.2
