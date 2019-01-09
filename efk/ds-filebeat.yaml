@@ -23,7 +23,7 @@ items:
         # json.message_key: log
         # json.keys_under_root: true
       output.elasticsearch:
-        hosts: ['es-single:9200']
+        hosts: ['es-cluster:9200']
       logging.level: info        
 - apiVersion: extensions/v1beta1
   kind: DaemonSet 
@@ -42,7 +42,7 @@ items:
           kubernetes.io/cluster-service: "true"
       spec:
         containers:
-        - image: docker.elastic.co/beats/filebeat:6.4.0
+        - image: harbor.ucex.corp/efk/filebeat:6.4.0
           name: filebeat
           args: [
             "-c", "/home/filebeat-config/filebeat.yml",
@@ -59,8 +59,8 @@ items:
             mountPath: /var/lib/docker/containers
           - name: "filebeat-volume"
             mountPath: "/home/filebeat-config"
-        nodeSelector:
-          role: front
+            #nodeSelector:
+            #  role: front
         volumes:
           - name: filebeat-storage
             hostPath:
@@ -81,7 +81,7 @@ items:
   subjects:
   - kind: ServiceAccount
     name: filebeat
-    namespace: default
+    namespace: dev
   roleRef:
     kind: ClusterRole
     name: filebeat
@@ -105,6 +105,6 @@ items:
   kind: ServiceAccount
   metadata:
     name: filebeat
-    namespace: default
+    namespace: dev
     labels:
       k8s-app: filebeat

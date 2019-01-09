@@ -23,7 +23,7 @@ items:
         # json.message_key: log
         # json.keys_under_root: true
       output.elasticsearch:
-        hosts: ['es-single:9200']
+        hosts: ['es-cluster:9200']
       logging.level: info        
 - apiVersion: extensions/v1beta1
   kind: Deployment 
@@ -43,7 +43,7 @@ items:
           kubernetes.io/cluster-service: "true"
       spec:
         containers:
-        - image: docker.elastic.co/beats/filebeat:6.4.0
+        - image: harbor.ucex.corp/efk/filebeat:6.4.0
           name: filebeat
           args: [
             "-c", "/home/filebeat-config/filebeat.yml",
