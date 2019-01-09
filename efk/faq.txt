@@ -1,0 +1,23 @@
+问题2：ERROR: bootstrap checks failed 
+max file descriptors [4096] for elasticsearch process likely too low, increase to at least [65536] 
+max number of threads [1024] for user [lishang] likely too low, increase to at least [2048] 
+问题3：max virtual memory areas vm.max_map_count [65530] likely too low, increase to at least [262144] 
+
+针对POD给予特权即可【请注意安全风险】：
+          securityContext:
+            privileged: true
+
+
+
+
+问题4：Exception in thread “main” ElasticsearchParseException[malformed, expected settings to start with ‘object’, instead was [VALUE_STRING]] 
+原因：配置elasticsearch.yml中的 network.host: 0.0.0.0 参数的“：”后需添加一个空格。 
+这个错就是参数的冒号前后没有加空格,加了之后就好,我找了好久这个问题;
+
+问题5： 
+initial heap size [268435456] not equal to maximum heap size [1073741824]; this can cause resize pauses and prevents mlockall from locking the entire heap
+
+调整了elasticsearch中的jvm.properties的最大和最小内存值不一致会出现这个错误。
+主要是jvm的xmx xms大小不一致，以及Node节点的mem不够的问题造成的，建议比如Node 16g mem， xmx与xms均为6g，同一个node上跑2个es节点；
+          - name: ES_JAVA_OPTS
+            value: "-Xms6g -Xmx6g"
