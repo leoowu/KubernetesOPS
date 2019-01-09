@@ -1,6 +1,6 @@
 # Kubernetes部署ELK并使用Filebeat收集容器日志 
 
-> 本文的试验环境为CentOS 7.3，Kubernetes集群为1.11.2，安装步骤参见[kubeadm安装kubernetes V1.11.1 集群](https://www.cnblogs.com/cocowool/p/kubeadm_install_kubernetes.html)
+> 本文的试验环境为CentOS 7.3，Kubernetes集群为1.11.2
 
 ## 1. 环境准备
 Elasticsearch运行时要求```vm.max_map_count```内核参数必须大于262144，因此开始之前需要确保这个参数正常调整过。
@@ -30,7 +30,7 @@ ES的节点[Node](https://www.elastic.co/guide/en/elasticsearch/reference/curren
 对于单节点的Node，默认是master-eligible和data，对于多节点的集群，就要仔细规划每个节点的角色。
 
 ## 2. 单实例方式部署ELK
-单实例部署ELK的方法非常简单，可以参考我Github上的[elk-single.yaml](https://github.com/cocowool/k8s-go/blob/master/elk/elk-single.yaml)文件，整体就是创建一个ES的部署，创建一个Kibana的部署，创建一个ES的Headless服务，创建一个Kiana的NodePort服务，本地通过节点的NodePort访问Kibana。
+单实例部署ELK的方法非常简单，可以参考我Github上的[elk-single.yaml]文件，整体就是创建一个ES的部署，创建一个Kibana的部署，创建一个ES的Headless服务，创建一个Kiana的NodePort服务，本地通过节点的NodePort访问Kibana。
 
 ```sh
 [root@devops-101 ~]# curl -L -O https://raw.githubusercontent.com/cocowool/k8s-go/master/elk/elk-single.yaml
