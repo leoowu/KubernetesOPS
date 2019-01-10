@@ -84,7 +84,7 @@ items:
           - name: discovery.zen.ping.unicast.hosts
             value: "es-cluster"
           - name: discovery.zen.minimum_master_nodes
-            value: "2"
+            value: "3"
           - name: cluster.name
             value: "dev-cluster"
           - name: node.master
@@ -143,7 +143,7 @@ items:
           - name: discovery.zen.ping.unicast.hosts
             value: "es-cluster"
           - name: discovery.zen.minimum_master_nodes
-            value: "2"
+            value: "3"
           - name: cluster.name
             value: "dev-cluster"
           - name: node.master
