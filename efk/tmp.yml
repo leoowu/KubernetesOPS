@@ -1,0 +1,134 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cm-ucex-app-filebeat-config
+  namespace: dev
+  labels:
+    k8s-app: filebeat
+    kubernetes.io/cluster-service: "true"
+    app: cm-ucex-app-filebeat-config
+data:
+  filebeat.yml: |
+    processors:
+      - add_cloud_metadata:
+    filebeat.modules:
+    - module: system
+    filebeat.inputs:
+    - type: log
+      scan_frequency: 10s
+      tail_files: true
+      multiline:
+        pattern: '^\[\d{4}-\d{2}-\d{2}'
+        negate: true
+        match: after
+      paths:
+        - /data/ucex/*/logs/*.log
+      symlinks: true
+      # json.message_key: log
+      # json.keys_under_root: true
+    output.elasticsearch:
+      hosts: ['es-cluster:9200']
+    logging.level: info 
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: k8s-ucex-app
+  namespace: dev
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: k8s-ucex-app
+    spec:
+      volumes:
+        - name: app-logs
+          emptyDir: {}
+        - name: cm-ucex-app
+          configMap:
+            name: cm-ucex-app
+        - name: filebeat-volume
+          configMap:
+            name: cm-ucex-app-filebeat-config
+      containers:
+      - name: k8s-ucex-app
+        image: harbor.ucex.corp/biger-dev/k8s-ucex-app:7
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: port-8802
+          containerPort: 8802
+        volumeMounts:
+        - name: cm-ucex-app
+          mountPath: /data/ucex/ucex-app/conf
+        - name: app-logs
+          mountPath: /data/ucex/ucex-app/logs
+      - name: ucex-app-filebeat
+        image: harbor.ucex.corp/efk/filebeat:6.4.0
+        args: [
+          "-c", "/home/filebeat-config/filebeat.yml",
+          "-e",
+        ]
+        securityContext:
+          runAsUser: 0
+        volumeMounts:
+        - name: app-logs
+          mountPath: /data/ucex/ucex-app/logs
+        - name: "filebeat-volume"
+          mountPath: "/home/filebeat-config"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: k8s-ucex-app
+  namespace: dev
+  labels:
+    name: k8s-ucex-app
+spec:
+  ports:
+    - name: port-8802
+      port: 8802
+      targetPort: port-8802
+  selector:
+    name: k8s-ucex-app
+
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  name: filebeat
+  namespace: dev
+subjects:
+- kind: ServiceAccount
+  name: filebeat
+  namespace: dev
+roleRef:
+  kind: ClusterRole
+  name: filebeat
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRole
+metadata:
+  name: filebeat
+  namespace: dev
+  labels:
+    k8s-app: filebeat
+rules:
+- apiGroups: [""] # "" indicates the core API group
+  resources:
+  - namespaces
+  - pods
+  verbs:
+  - get
+  - watch
+  - list
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: filebeat
+  namespace: dev
+  labels:
+    k8s-app: filebeat
+
