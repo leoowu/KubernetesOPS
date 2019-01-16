@@ -1,0 +1,42 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: sonar-deployment
+  labels:
+    app: sonar-deployment
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: sonar-deployment
+    spec:
+      containers:
+      - name: sonarqube
+        image: harbor.ucex.corp/biger/sonarqube:6.7.6
+        ports:
+        - name: sonarqube
+          containerPort: 9000
+          #        env:
+          #        - name: SONARQUBE_JDBC_USERNAME
+          #          value: sonar
+          #        - name: SONARQUBE_JDBC_PASSWORD
+          #          value: sonar.abcd.1234
+          #        - name: SONARQUBE_JDBC_URL
+          #          value: jdbc:mysql://mysql01.dev.biger.corp:3306/sonar?useUnicode=true&characterEncoding=utf8&rewriteBatchedStatements=true
+          #        volumeMounts:
+          #         - name: sonarqube-extensions
+          #           mountPath: /opt/sonarqube/extensions
+          #         - name: sonarqube-data
+          #           mountPath: /opt/sonarqube/data
+          #      volumes:
+          #      - name: sonarqube-extensions
+          #        nfs:
+          #          server: "nfs.ucex.corp"
+          #          path: "/sonarqube/extensions"
+          #          readOnly: false
+          #      - name: sonarqube-data
+          #        nfs:
+          #          server: "nfs.ucex.corp"
+          #          path: "/sonarqube/data"
+          #          readOnly: false
